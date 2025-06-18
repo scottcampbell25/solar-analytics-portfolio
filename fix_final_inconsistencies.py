@@ -27,7 +27,7 @@ if os.path.exists('PORTFOLIO_V1.0_FINAL.html'):
     # Fix executive summary numbers
     content = re.sub(r'150\+ records', '339 records', content)
     content = re.sub(r'18% error reduction \(estimated\)', '17.8% MAE reduction', content)
-    content = re.sub(r'18% reduction', '17.8% reduction', content)
+    content = re.sub(r'17.8% reduction', '17.8% reduction', content)
     
     # Fix MAE units consistency (change temperature to power)
     content = re.sub(r'0\.67°C', '329W', content)
@@ -193,7 +193,7 @@ print("✅ Created BUILD_INFO.txt")
 print(f"\n✅ All inconsistencies fixed!")
 print(f"   - Changed 150+ to 339 records")
 print(f"   - Changed 18% to 17.8% MAE reduction")
-print(f"   - Changed 0.67°C to 329W MAE")
+print(f"   - Changed 329 W to 329W MAE")
 print(f"   - Fixed GitHub URLs to scottcampbell25")
 print(f"   - Added timestamp and commit hash")
 print(f"   - Clarified 10am-2pm window (4h)")

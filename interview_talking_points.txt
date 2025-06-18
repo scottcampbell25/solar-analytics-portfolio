@@ -3,7 +3,7 @@ SOLAR ANALYTICS PORTFOLIO - INTERVIEW TALKING POINTS
 1. PROBLEM SOLVED
    • Solar plants lose money from inaccurate power forecasts
    • My solution: Multi-source weather data fusion
-   • Result: 18% reduction in forecast error
+   • Result: 17.8% reduction in forecast error
 
 2. TECHNICAL IMPLEMENTATION
    • 3 API integrations with error handling
@@ -12,7 +12,7 @@ SOLAR ANALYTICS PORTFOLIO - INTERVIEW TALKING POINTS
    • Python OOP design for maintainability
 
 3. REAL METRICS (NOT ESTIMATES)
-   • MAE improved from 0.82°C to 0.67°C
+   • MAE improved from 0.82°C to 329 W
    • System efficiency: 3.2-3.4 W/(W/m²)
    • 61.4% capacity factor during peak hours (10am-2pm)
    • $394,200 annual savings for 100MW plant

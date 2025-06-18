@@ -3,7 +3,7 @@
 ## ✅ All Inconsistencies Fixed
 - [x] 339 records (not 150+) throughout all documents
 - [x] 17.8% MAE reduction (not 18% estimated)
-- [x] 329W MAE (not 0.67°C) for consistency
+- [x] 329W MAE (not 329 W) for consistency
 - [x] GitHub URL: https://github.com/scottcampbell25/solar-analytics-portfolio
 - [x] Timestamp and commit hash in footer
 - [x] "10am-2pm window (4h)" clarification

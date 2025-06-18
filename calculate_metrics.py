@@ -109,7 +109,7 @@ try:
     error_mwh_before = mae_before * power_sensitivity * hours_per_year
     penalty_before = error_mwh_before * penalty_per_mwh
     
-    # After improvement (18% reduction)
+    # After improvement (17.8% reduction)
     mae_after = mae_before * 0.82
     error_mwh_after = mae_after * power_sensitivity * hours_per_year
     penalty_after = error_mwh_after * penalty_per_mwh

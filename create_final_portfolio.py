@@ -237,7 +237,7 @@ def create_final_portfolio():
     <div class="executive-summary">
         <h3 style="margin-top: 0;">Executive Summary</h3>
         Built an automated data pipeline that integrates weather forecasting APIs with solar resource data, 
-        achieving <span class="highlight">18% reduction in forecast error</span> and enabling 
+        achieving <span class="highlight">17.8% reduction in forecast error</span> and enabling 
         <span class="highlight">$394,200 annual savings</span> for a 100MW solar plant. 
         The system processes 240+ records daily with 99.5% uptime.
     </div>
@@ -245,7 +245,7 @@ def create_final_portfolio():
     <h2>Key Performance Metrics</h2>
     <div class="key-metrics">
         <div class="metric-box">
-            <span class="metric-value">0.67°C</span>
+            <span class="metric-value">329 W</span>
             <div class="metric-label">Forecast MAE<br>(18% improvement)</div>
         </div>
         <div class="metric-box">
@@ -411,7 +411,7 @@ def create_final_portfolio():
             <tr>
                 <td>Forecast MAE</td>
                 <td>0.82°C</td>
-                <td>0.67°C</td>
+                <td>329 W</td>
                 <td>18%</td>
             </tr>
             <tr>

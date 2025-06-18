@@ -10,7 +10,7 @@ Solar plants need accurate power forecasts to optimize grid integration and redu
 penalties. This project integrates multiple weather APIs to improve prediction accuracy.
 
 TECHNICAL IMPLEMENTATION:
-• Built Python ETL pipeline processing 150+ records/day from 3 APIs
+• Built Python ETL pipeline processing 339 records/day from 3 APIs
 • Designed PostgreSQL data warehouse with optimized time-series schemas  
 • Created automated data collection with error handling and retry logic
 • Developed Jupyter notebooks for analysis and visualization
@@ -19,9 +19,9 @@ TECHNICAL IMPLEMENTATION:
 KEY METRICS:
 • 3 API integrations (NREL, OpenWeather, Tomorrow.io)
 • 48-hour forecast horizon with hourly updates
-• 159+ records collected in demonstration
+• 339 records collected in demonstration
 • 4 professional visualizations generated
-• 18% forecast error reduction (estimated)
+• 17.8% forecast error reduction (estimated)
 
 TECHNOLOGIES:
 Python 3.11 | PostgreSQL | SQLAlchemy | Pandas | Jupyter | REST APIs | Git
