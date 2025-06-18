@@ -1,0 +1,394 @@
+#!/usr/bin/env python3
+"""Create Jupyter notebooks for analysis"""
+
+import os
+import json
+
+def create_notebook(filename, cells):
+    """Create a Jupyter notebook with given cells"""
+    notebook = {
+        "cells": cells,
+        "metadata": {
+            "kernelspec": {
+                "display_name": "Python 3",
+                "language": "python",
+                "name": "python3"
+            },
+            "language_info": {
+                "name": "python",
+                "version": "3.11.0"
+            }
+        },
+        "nbformat": 4,
+        "nbformat_minor": 5
+    }
+    
+    with open(filename, 'w') as f:
+        json.dump(notebook, f, indent=2)
+    print(f"✅ Created {filename}")
+
+# Create notebooks directory
+os.makedirs("notebooks", exist_ok=True)
+
+# 1. Data Exploration Notebook
+exploration_cells = [
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "# Solar Analytics - Data Exploration\n",
+            "\n",
+            "This notebook explores the data collected from NREL, OpenWeather, and Tomorrow.io APIs."
+        ]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "source": [
+            "import pandas as pd\n",
+            "import numpy as np\n",
+            "import matplotlib.pyplot as plt\n",
+            "import seaborn as sns\n",
+            "from sqlalchemy import create_engine\n",
+            "from dotenv import load_dotenv\n",
+            "import os\n",
+            "\n",
+            "# Load environment variables\n",
+            "load_dotenv()\n",
+            "\n",
+            "# Create database connection\n",
+            "db_url = f\"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}/solar_analytics\"\n",
+            "engine = create_engine(db_url)\n",
+            "\n",
+            "print(\"✅ Connected to database\")"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": ["## 1. Load Data from Database"]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "source": [
+            "# Load NREL solar data\n",
+            "nrel_query = \"\"\"\n",
+            "SELECT * FROM api_ingest.nrel_pvdaq \n",
+            "WHERE timestamp IS NOT NULL\n",
+            "ORDER BY timestamp\n",
+            "\"\"\"\n",
+            "df_nrel = pd.read_sql(nrel_query, engine)\n",
+            "print(f\"NREL data: {len(df_nrel)} records\")\n",
+            "\n",
+            "# Load weather data\n",
+            "weather_query = \"SELECT * FROM api_ingest.weather_test ORDER BY timestamp\"\n",
+            "df_weather = pd.read_sql(weather_query, engine)\n",
+            "print(f\"Weather data: {len(df_weather)} records\")\n",
+            "\n",
+            "# Load Tomorrow.io forecasts\n",
+            "tomorrow_query = \"SELECT * FROM api_ingest.tomorrow_weather ORDER BY valid_time\"\n",
+            "df_tomorrow = pd.read_sql(tomorrow_query, engine)\n",
+            "print(f\"Tomorrow.io data: {len(df_tomorrow)} records\")"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": ["## 2. NREL Solar Resource Analysis"]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "source": [
+            "# Separate monthly and hourly data\n",
+            "df_monthly = df_nrel[df_nrel['site_id'] == 'NREL_MONTHLY'].copy()\n",
+            "df_hourly = df_nrel[df_nrel['site_id'] == 'PVWATTS_SIM'].copy()\n",
+            "\n",
+            "# Plot monthly solar irradiance\n",
+            "if len(df_monthly) > 0:\n",
+            "    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))\n",
+            "    \n",
+            "    # GHI by month\n",
+            "    df_monthly['month'] = pd.to_datetime(df_monthly['timestamp']).dt.month_name()\n",
+            "    ax1.bar(range(len(df_monthly)), df_monthly['ghi'])\n",
+            "    ax1.set_xticks(range(len(df_monthly)))\n",
+            "    ax1.set_xticklabels(df_monthly['month'], rotation=45)\n",
+            "    ax1.set_ylabel('GHI (kWh/m²/day)')\n",
+            "    ax1.set_title('Monthly Average Global Horizontal Irradiance')\n",
+            "    \n",
+            "    # DNI by month\n",
+            "    ax2.bar(range(len(df_monthly)), df_monthly['dni'], color='orange')\n",
+            "    ax2.set_xticks(range(len(df_monthly)))\n",
+            "    ax2.set_xticklabels(df_monthly['month'], rotation=45)\n",
+            "    ax2.set_ylabel('DNI (kWh/m²/day)')\n",
+            "    ax2.set_title('Monthly Average Direct Normal Irradiance')\n",
+            "    \n",
+            "    plt.tight_layout()\n",
+            "    plt.show()"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": ["## 3. PV System Output Analysis"]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "source": [
+            "# Analyze hourly PV output\n",
+            "if len(df_hourly) > 0:\n",
+            "    df_hourly['hour'] = pd.to_datetime(df_hourly['timestamp']).dt.hour\n",
+            "    \n",
+            "    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8))\n",
+            "    \n",
+            "    # AC power output by hour\n",
+            "    ax1.plot(df_hourly['hour'], df_hourly['ac_power'], 'b-', linewidth=2)\n",
+            "    ax1.set_xlabel('Hour of Day')\n",
+            "    ax1.set_ylabel('AC Power (W)')\n",
+            "    ax1.set_title('Simulated PV System Output (4kW System)')\n",
+            "    ax1.grid(True, alpha=0.3)\n",
+            "    \n",
+            "    # POA irradiance vs AC power\n",
+            "    ax2.scatter(df_hourly['poa_irradiance'], df_hourly['ac_power'], alpha=0.6)\n",
+            "    ax2.set_xlabel('Plane of Array Irradiance (W/m²)')\n",
+            "    ax2.set_ylabel('AC Power (W)')\n",
+            "    ax2.set_title('Power Output vs Irradiance')\n",
+            "    ax2.grid(True, alpha=0.3)\n",
+            "    \n",
+            "    plt.tight_layout()\n",
+            "    plt.show()\n",
+            "    \n",
+            "    # Calculate capacity factor\n",
+            "    system_capacity = 4000  # 4kW system\n",
+            "    avg_output = df_hourly['ac_power'].mean()\n",
+            "    capacity_factor = avg_output / system_capacity\n",
+            "    print(f\"\\nAverage capacity factor: {capacity_factor:.1%}\")"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": ["## 4. Weather Forecast Analysis"]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "source": [
+            "# Analyze Tomorrow.io solar forecasts\n",
+            "if len(df_tomorrow) > 0:\n",
+            "    df_tomorrow['hour'] = pd.to_datetime(df_tomorrow['valid_time']).dt.hour\n",
+            "    df_tomorrow['forecast_age'] = (pd.to_datetime(df_tomorrow['valid_time']) - \n",
+            "                                  pd.to_datetime(df_tomorrow['forecast_time'])).dt.total_seconds() / 3600\n",
+            "    \n",
+            "    # Plot solar GHI forecast\n",
+            "    plt.figure(figsize=(12, 6))\n",
+            "    plt.plot(df_tomorrow['valid_time'], df_tomorrow['solar_ghi'], 'g-', linewidth=2)\n",
+            "    plt.xlabel('Time')\n",
+            "    plt.ylabel('Solar GHI (W/m²)')\n",
+            "    plt.title('48-Hour Solar Irradiance Forecast')\n",
+            "    plt.xticks(rotation=45)\n",
+            "    plt.grid(True, alpha=0.3)\n",
+            "    plt.tight_layout()\n",
+            "    plt.show()\n",
+            "    \n",
+            "    # Temperature and cloud cover\n",
+            "    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8), sharex=True)\n",
+            "    \n",
+            "    ax1.plot(df_tomorrow['valid_time'], df_tomorrow['temperature'], 'r-', linewidth=2)\n",
+            "    ax1.set_ylabel('Temperature (°C)')\n",
+            "    ax1.set_title('Temperature Forecast')\n",
+            "    ax1.grid(True, alpha=0.3)\n",
+            "    \n",
+            "    ax2.fill_between(df_tomorrow['valid_time'], 0, df_tomorrow['cloud_cover'], alpha=0.5)\n",
+            "    ax2.set_ylabel('Cloud Cover (%)')\n",
+            "    ax2.set_xlabel('Time')\n",
+            "    ax2.set_title('Cloud Cover Forecast')\n",
+            "    ax2.grid(True, alpha=0.3)\n",
+            "    \n",
+            "    plt.xticks(rotation=45)\n",
+            "    plt.tight_layout()\n",
+            "    plt.show()"
+        ]
+    }
+]
+
+create_notebook("notebooks/01_data_exploration.ipynb", exploration_cells)
+
+# 2. Feature Engineering Notebook
+feature_cells = [
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "# Solar Analytics - Feature Engineering\n",
+            "\n",
+            "This notebook creates features for solar power forecasting models."
+        ]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "source": [
+            "import pandas as pd\n",
+            "import numpy as np\n",
+            "from sqlalchemy import create_engine, text\n",
+            "from dotenv import load_dotenv\n",
+            "import os\n",
+            "\n",
+            "load_dotenv()\n",
+            "\n",
+            "# Database connection\n",
+            "db_url = f\"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}/solar_analytics\"\n",
+            "engine = create_engine(db_url)"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": ["## 1. Create Time-based Features"]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "source": [
+            "def create_time_features(df, timestamp_col='timestamp'):\n",
+            "    \"\"\"Create time-based features from timestamp\"\"\"\n",
+            "    df = df.copy()\n",
+            "    \n",
+            "    # Convert to datetime\n",
+            "    df[timestamp_col] = pd.to_datetime(df[timestamp_col])\n",
+            "    \n",
+            "    # Extract time features\n",
+            "    df['hour'] = df[timestamp_col].dt.hour\n",
+            "    df['day_of_year'] = df[timestamp_col].dt.dayofyear\n",
+            "    df['month'] = df[timestamp_col].dt.month\n",
+            "    df['day_of_week'] = df[timestamp_col].dt.dayofweek\n",
+            "    \n",
+            "    # Solar position features\n",
+            "    df['hour_sin'] = np.sin(2 * np.pi * df['hour'] / 24)\n",
+            "    df['hour_cos'] = np.cos(2 * np.pi * df['hour'] / 24)\n",
+            "    df['day_sin'] = np.sin(2 * np.pi * df['day_of_year'] / 365)\n",
+            "    df['day_cos'] = np.cos(2 * np.pi * df['day_of_year'] / 365)\n",
+            "    \n",
+            "    return df\n",
+            "\n",
+            "# Test with sample data\n",
+            "sample_df = pd.DataFrame({\n",
+            "    'timestamp': pd.date_range('2024-01-01', periods=48, freq='H')\n",
+            "})\n",
+            "\n",
+            "sample_with_features = create_time_features(sample_df)\n",
+            "print(\"Time features created:\")\n",
+            "print(sample_with_features.head())"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": ["## 2. Create Solar Features"]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "source": [
+            "def create_solar_features(df):\n",
+            "    \"\"\"Create solar-specific features\"\"\"\n",
+            "    df = df.copy()\n",
+            "    \n",
+            "    # Clear sky index (if GHI available)\n",
+            "    if 'ghi' in df.columns and 'solar_ghi' in df.columns:\n",
+            "        df['clear_sky_index'] = df['ghi'] / (df['solar_ghi'] + 0.1)  # Avoid division by zero\n",
+            "    \n",
+            "    # Performance ratio\n",
+            "    if 'ac_power' in df.columns and 'poa_irradiance' in df.columns:\n",
+            "        system_capacity = 4000  # 4kW system\n",
+            "        df['performance_ratio'] = df['ac_power'] / (df['poa_irradiance'] * system_capacity / 1000)\n",
+            "    \n",
+            "    # Lagged features\n",
+            "    for lag in [1, 2, 3, 6, 12, 24]:\n",
+            "        if 'ac_power' in df.columns:\n",
+            "            df[f'power_lag_{lag}h'] = df['ac_power'].shift(lag)\n",
+            "        if 'temperature' in df.columns:\n",
+            "            df[f'temp_lag_{lag}h'] = df['temperature'].shift(lag)\n",
+            "    \n",
+            "    # Rolling averages\n",
+            "    for window in [3, 6, 12, 24]:\n",
+            "        if 'ac_power' in df.columns:\n",
+            "            df[f'power_ma_{window}h'] = df['ac_power'].rolling(window).mean()\n",
+            "    \n",
+            "    return df\n",
+            "\n",
+            "print(\"Solar feature functions created\")"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": ["## 3. Create Feature Pipeline"]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "source": [
+            "def create_feature_table():\n",
+            "    \"\"\"Create feature table in mart schema\"\"\"\n",
+            "    \n",
+            "    # Load data\n",
+            "    query = \"\"\"\n",
+            "    SELECT \n",
+            "        timestamp,\n",
+            "        site_id,\n",
+            "        ac_power,\n",
+            "        dc_power,\n",
+            "        poa_irradiance,\n",
+            "        ambient_temp\n",
+            "    FROM api_ingest.nrel_pvdaq\n",
+            "    WHERE site_id = 'PVWATTS_SIM'\n",
+            "    ORDER BY timestamp\n",
+            "    \"\"\"\n",
+            "    \n",
+            "    df = pd.read_sql(query, engine)\n",
+            "    \n",
+            "    if len(df) > 0:\n",
+            "        # Add time features\n",
+            "        df = create_time_features(df)\n",
+            "        \n",
+            "        # Add solar features\n",
+            "        df = create_solar_features(df)\n",
+            "        \n",
+            "        # Save to mart schema\n",
+            "        df.to_sql('solar_features', engine, schema='mart', \n",
+            "                 if_exists='replace', index=False)\n",
+            "        \n",
+            "        print(f\"✅ Created feature table with {len(df)} records\")\n",
+            "        print(f\"Features: {list(df.columns)}\")\n",
+            "        \n",
+            "        return df\n",
+            "    else:\n",
+            "        print(\"No data available for feature engineering\")\n",
+            "        return None\n",
+            "\n",
+            "# Run feature pipeline\n",
+            "feature_df = create_feature_table()"
+        ]
+    }
+]
+
+create_notebook("notebooks/02_feature_engineering.ipynb", feature_cells)
+
+print("\n✅ Notebooks created!")
+print("\nTo use them:")
+print("1. cd notebooks")
+print("2. jupyter notebook")
+print("\nThen open the notebooks in your browser.")

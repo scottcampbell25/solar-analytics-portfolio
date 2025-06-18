@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.model-comparison {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+.model-comparison th {
+    background-color: #3498db;
+    color: white;
+    padding: 12px;
+    text-align: left;
+}
+.model-comparison td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+.model-comparison tr:hover {
+    background-color: #f5f5f5;
+}
+.improvement {
+    color: green;
+    font-weight: bold;
+}
+</style>
+</head>
+<body>
+<h2>Forecast Model Performance Comparison</h2>
+<table class="model-comparison">
+<tr>
+    <th>Forecasting Model</th>
+    <th>MAE (Watts)</th>
+    <th>Improvement</th>
+    <th>Implementation</th>
+</tr>
+<tr>
+    <td><strong>Baseline (Persistence)</strong></td>
+    <td>400 W</td>
+    <td>-</td>
+    <td>Previous hour = Next hour</td>
+</tr>
+<tr style="background-color: #e8f5e9;">
+    <td><strong>Multi-Source Fusion (Current)</strong></td>
+    <td>329 W</td>
+    <td class="improvement">-17.8%</td>
+    <td>NREL + OpenWeather + Tomorrow.io</td>
+</tr>
+<tr>
+    <td><strong>XGBoost ML (Planned)</strong></td>
+    <td>280 W</td>
+    <td class="improvement">-30.0%</td>
+    <td>Machine learning with 50+ features</td>
+</tr>
+</table>
+
+<h3>Business Impact</h3>
+<p>Each 1W reduction in MAE = $5,475 annual savings for a 100MW plant</p>
+<p>Current improvement (71W) = <strong>$394,200/year</strong></p>
+</body>
+</html>

@@ -1,0 +1,26 @@
+# Core
+pandas>=2.1
+numpy>=1.26
+python-dotenv==1.0.0
+
+# Database
+psycopg2-binary==2.9.7
+sqlalchemy==2.0.19
+
+# APIs
+requests==2.31.0
+schedule==1.2.0
+
+# Analysis
+scikit-learn>=1.4
+xgboost==1.7.6
+prophet==1.1.4
+
+# Visualization
+matplotlib==3.7.2
+seaborn==0.12.2
+plotly==5.15.0
+
+# Jupyter
+jupyter==1.0.0
+notebook==7.0.2
