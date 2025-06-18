@@ -1,0 +1,27 @@
+BUILD INFORMATION
+=================
+Version: 1.0
+Commit: cd84d87
+Built: June 17, 2025 at 23:14 UTC
+Author: Scott Campbell
+Repository: https://github.com/scottcampbell25/solar-analytics-portfolio
+
+FILES INCLUDED
+--------------
+- PORTFOLIO_V1.0_FINAL.html (main portfolio)
+- pipeline_dashboard_production.png
+- pv_performance_production.png  
+- weather_forecast_production.png
+- solar_resource_monthly_v2.png
+- model_comparison_final.html
+- portfolio_onepager_final.txt
+- metrics_card_final.txt
+
+METRICS CONSISTENCY
+-------------------
+✓ 339 records per 24-hour window
+✓ 17.8% MAE reduction (not 18% estimated)
+✓ 400W → 329W (not temperature units)
+✓ $394,200 annual savings
+✓ 61.4% capacity factor (10am-2pm window)
+✓ 5 visualizations total
