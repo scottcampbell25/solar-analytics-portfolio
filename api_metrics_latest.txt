@@ -1,0 +1,6 @@
+API METRICS - LATEST
+===================
+
+NREL: 1.1s latency, 100.0% uptime
+OpenWeather: 0.3s latency, 100.0% uptime
+Tomorrow.io: 0.3s latency, 0.0% uptime
