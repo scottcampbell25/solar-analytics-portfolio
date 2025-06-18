@@ -15,7 +15,7 @@ BUSINESS IMPACT:
 • Maintenance Optimization: 2-day advance weather windows
 
 DATA VOLUME:
-• Records Processed: 159+ per day
+• Records Processed: 339 per day
 • Forecast Horizon: 48 hours
 • Update Frequency: 10-60 minutes
 • Historical Depth: 12 months solar resource data

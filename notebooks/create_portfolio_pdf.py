@@ -200,7 +200,7 @@ def create_portfolio_html():
             <div class="metric-label">API Integrations</div>
         </div>
         <div class="metric">
-            <div class="metric-value">159+</div>
+            <div class="metric-value">339</div>
             <div class="metric-label">Records/Day</div>
         </div>
         <div class="metric">
